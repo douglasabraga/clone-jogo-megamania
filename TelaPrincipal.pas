@@ -32,6 +32,7 @@ type
     lblAux: TLabel;
     lblAux2: TLabel;
     pnlEnergiaRed: TPanel;
+    TGeraFase: TTimer;
 
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
@@ -45,6 +46,7 @@ type
     procedure atualizaVida();
 
     function  VerificaColisao(O1, O2 : TControl):boolean;
+    procedure TGeraFaseTimer(Sender: TObject);
 
   private
     { Private declarations }
@@ -53,12 +55,14 @@ type
   end;
 
 var
+  faseAtual: integer;
   Form1: TForm1;
   bateu : boolean;
   life: integer;
   pontuacao: integer;
   navesDestruidas: integer;
   NumeroNaves : integer;
+  geradorNaves: integer;
   energia : integer;
   energiaRed: integer;
 
@@ -68,7 +72,8 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-fire.Left:= -50;
+   fire.Left:= -50;
+   NumeroNaves:=3;
    life :=5;
    energia:= 400;
    energiaRed:=0;
@@ -98,7 +103,7 @@ begin
 
     end;
 
-    energiaRed:=energiaRed+5;
+    energiaRed:=energiaRed+3;
 
     if (nave.Left < -20) then
         nave.Left := -20;
@@ -111,14 +116,14 @@ end;
 
 
 procedure TForm1.TCriadorTimer(Sender: TObject);
-  var t : TImage;
+  var t : TImage; aux : integer;
   begin
-   inc(NumeroNaves);
-   if not(bateu) and (NumeroNaves < 10) then
+   inc(geradorNaves);
+   if not(bateu) and (geradorNaves <= NumeroNaves) then
    begin
       t         := TImage.Create(Form1);
       t.Parent  := form1;
-      t.Picture.LoadFromFile('enemyBlack.png');
+      t.Picture.LoadFromFile('img/enemyBlack.png');
       t.Top     := -20;
       t.Stretch := true;
       t.Height  := 55;
@@ -126,6 +131,18 @@ procedure TForm1.TCriadorTimer(Sender: TObject);
       t.Left    := Random(Form1.Width - 50);
       t.Tag     := 1;
    end;
+end;
+
+procedure TForm1.TGeraFaseTimer(Sender: TObject);
+begin
+   if (navesDestruidas - NumeroNaves = 0) then
+   begin
+      geradorNaves:= 0;
+      navesDestruidas:=0;
+      faseAtual := faseAtual+1;
+      lblAux.Caption:=string.Parse(faseAtual);
+   end;
+
 end;
 
 //Animação do tiro
@@ -144,6 +161,7 @@ begin
       fire.Left := nave.Left+26;
       fire.Top := nave.top-20;
       semMunicao();
+      energiaRed:=energiaRed+20;
   end;
 
 
@@ -153,7 +171,7 @@ procedure TForm1.TMoverTimer(Sender: TObject);
 var i : integer;
 begin
     //PAINEL DE ENERGIA/////////// TIMER /////////////
-    if energiaRed = 20 then
+    if energiaRed >= 20 then
       begin
         if pnlEnergiaRed.Visible and (pnlEnergiaRed.Left>painelEnergia.Left) then
         begin
@@ -188,7 +206,7 @@ begin
                   Timage(form1.Components[i]).Top    := -20;
                   Timage(form1.Components[i]).Left   := Random(form1.Width - 50);
                end;
-//                lblAux.Caption:=string.Parse(NumeroNaves);
+
                VerificaColisao(nave, TImage(form1.Components[i]));
                VerificaColisao(fire, TImage(form1.Components[i]));
             end;
@@ -264,14 +282,11 @@ begin
 
        //Colisão nave aliada e nave inimiga
        if o1.Tag = 0 then atualizaVida();
-
+       navesDestruidas:=navesDestruidas+1;
+       lblAux2.Caption:=string.Parse(navesDestruidas);
       end;
       o2.Visible := false;
       o2.Enabled := false;
-
-      navesDestruidas:=navesDestruidas+1;
-
-      lblAux2.Caption:=string.Parse(navesDestruidas);
     end;
 
     VerificaColisao := (topo or baixo) and (esquerda or direita);
