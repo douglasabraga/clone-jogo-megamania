@@ -552,10 +552,4 @@ object Form1: TForm1
     Left = 640
     Top = 240
   end
-  object TAtualizaEnergia: TTimer
-    Interval = 1
-    OnTimer = TAtualizaEnergiaTimer
-    Left = 640
-    Top = 288
-  end
 end
