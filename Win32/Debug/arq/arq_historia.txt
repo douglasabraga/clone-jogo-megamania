@@ -1,0 +1,25 @@
+HISTÓRIA
+------------------------------------------------------------------------------
+Numa nave espacial, embarque, em busca de uma aventura
+no espaço cideral.
+Vamos em busca do infinito, certos de que além do acima há uma jornada.
+Quantas surpresas encontraremos?
+Dificil de definir o universo e o que nele há.
+O que sei é que longe da Terra já estamos, de órbita tão distante.
+Você dita o seu futuro, você dita sua aventura!
+
+Esse é o Seu Destino!
+
+
+INSTRUCOES
+------------------------------------------------------------------------------
+O jogo só termina se voce chegar a um total de 0 vidas, iniciando com 5,
+ou se a barra de energia ficar totalmente vermelha.
+
+Existem tres tipos de inimigos, enemyBlack(1 vida), enemyGreen(3 vidas),
+E o enemyRed(3 vidas), mas há um porém, o enemyRed para evitar ser abatido,
+ele sofre uma mutacao para o enemyGreen, que faz o mesmo processo para enemyBlack.
+
+Perde-se vida ao chocar com a nave inimiga, e perde-se energia ao movimentar a nave, atirar,
+e deixar um inimigo passar por você.
+ 

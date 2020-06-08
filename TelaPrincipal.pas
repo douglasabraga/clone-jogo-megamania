@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, Vcl.ExtCtrls,
-  Vcl.StdCtrls, Vcl.Grids;
+  Vcl.StdCtrls, Vcl.Grids, ArquivosUnit;
 
 type
   TForm1 = class(TForm)
@@ -29,8 +29,8 @@ type
     TimerAnimacaoTiro: TTimer;
 
     pontos: TLabel;
-    lblAux: TLabel;
-    lblAux2: TLabel;
+    lblQntdWave: TLabel;
+    lblQntdNavesDestruidas: TLabel;
     pnlEnergiaRed: TPanel;
     TGeraFase: TTimer;
     Label1: TLabel;
@@ -43,8 +43,6 @@ type
     Label3: TLabel;
     Memo1: TMemo;
     Label4: TLabel;
-    StringGrid1: TStringGrid;
-    imgRestart: TImage;
 
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
@@ -66,6 +64,8 @@ type
     procedure btnInstrucoesClick(Sender: TObject);
     procedure btnControlesClick(Sender: TObject);
     procedure MenuPrincipal();
+    procedure telaFimJogo();
+    procedure inicializaMemo();
 
 
   private
@@ -81,6 +81,7 @@ var
   life: integer;
   pontuacao: integer;
   navesDestruidasPorWave: integer;
+  totalNavesDestruidas: integer;
   NumeroNaves : integer;
   geradorNaves: integer;
   energia : integer;
@@ -92,7 +93,18 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   MenuPrincipal;
+    Randomize;
+    faseAtual:=1;
+    NumeroNaves:=3;
+    life :=5;
+    energiaRed:=0;
+    totalNavesDestruidas:=0;
+    navesDestruidasPorWave:=0;
+    pontuacao:=0;
+    DoubleBuffered := true;
+    endGame := false;
+    MenuPrincipal;
+
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
@@ -115,7 +127,7 @@ begin
 
     end;
 
-    energiaRed:=energiaRed+3;
+      energiaRed:=energiaRed+3;
 
     if (nave.Left < -20) then
         nave.Left := -20;
@@ -134,9 +146,7 @@ procedure TForm1.TCriadorTimer(Sender: TObject);
    begin
       t         := TImage.Create(Form1);
       t.Parent  := form1;
-//      t.Picture.LoadFromFile(corNave(10 + Random(7)));
       t.Tag     := setTag(10 + Random(7));
-//      t.Tag     := setTag(17);
       t.Picture.LoadFromFile(setCorEnemy(t.Tag));
       t.Top     := -20;
       t.Stretch := true;
@@ -150,17 +160,11 @@ end;
 function TForm1.setTag(tag : integer):integer;
 begin
    //Nave Inimiga de cor laranja
-
-//   if (Tag >= 16) and (faseAtual >= 15) and
-//      (1 + Random(100) <= faseAtual+(1 + Random(faseAtual+10))) then
    if (Tag >= 16) and (faseAtual >= 15) then
        begin
          Result:=16;
        end
    //Nave Inimiga de cor verde
-
-//   else if (Tag >= 12) and (faseAtual >= 10) and
-//      (1 + Random(100) <= faseAtual+(1 + Random(faseAtual+10))) then
    else if (Tag >= 13) and (faseAtual >= 10) then
        begin
          Result:=13;
@@ -208,7 +212,7 @@ begin
       if pnlEnergiaRed.Left<=painelEnergia.Left then
       begin
         endGame:=true;
-        MenuPrincipal;
+        telaFimJogo;
       end;
 
     end;
@@ -222,7 +226,7 @@ begin
       navesDestruidasPorWave:=0;
       faseAtual := faseAtual+1;
       NumeroNaves:= faseAtual*(1 + Random(3));
-      lblAux.Caption:=string.Parse(faseAtual);
+      lblQntdWave.Caption:=string.Parse(faseAtual);
       pnlEnergiaRed.Enabled:=false;
       pnlEnergiaRed.Width:=3;
       pnlEnergiaRed.Left:=579;
@@ -337,7 +341,7 @@ begin
             o2.Visible := false;
             o2.Enabled := false;
             navesDestruidasPorWave:=navesDestruidasPorWave+1;
-
+            totalNavesDestruidas:=totalNavesDestruidas+1;
 //            if pnlEnergiaRed.Visible and (pnlEnergiaRed.Left>painelEnergia.Left) then
                pnlEnergiaRed.Left := pnlEnergiaRed.Left+9;
                pnlEnergiaRed.Width := pnlEnergiaRed.Width-9;
@@ -366,10 +370,11 @@ begin
           o2.Visible := false;
           o2.Enabled := false;
           navesDestruidasPorWave:=navesDestruidasPorWave+1;
+          totalNavesDestruidas:=totalNavesDestruidas+1;
         end;
 
 
-        lblAux2.Caption:=string.Parse(navesDestruidasPorWave);
+        lblQntdNavesDestruidas.Caption:=string.Parse(TotalNavesDestruidas);
       end;
 
     end;
@@ -400,7 +405,9 @@ begin
    begin
      life1.Visible := false;
      endGame := true;
-     MenuPrincipal;
+     telaFimJogo;
+     Panel1.Visible:=false;
+     nave.Visible:=false;
    end;
 end;
 
@@ -426,18 +433,10 @@ end;
 
 procedure TForm1.MenuPrincipal();
 begin
-  //inicializar Variaveis
-  Randomize;
-  faseAtual:=1;
-  NumeroNaves:=3;
-  life :=5;
-  energiaRed:=0;
-  navesDestruidasPorWave:=0;
-  pontuacao:=0;
-  DoubleBuffered := true;
-  endGame := false;
 
   //Mostrar Menu
+  nave.Visible:=false;
+  Panel1.Visible:=false;
   btnJogar.Visible:=true;
   btnControles.Visible:=true;
   btnInstrucoes.Visible:=true;
@@ -446,6 +445,9 @@ end;
 
 procedure TForm1.btnJogarClick(Sender: TObject);
 begin
+
+  //inicializar Variaveis
+
 
     //Habilitar Jogo
     TMover.Enabled := true;
@@ -467,7 +469,7 @@ begin
 
     pnlMenu.Visible:=false;
     Memo1.Visible:=false;
-    StringGrid1.Visible:=false;
+
 end;
 
 procedure TForm1.btnControlesClick(Sender: TObject);
@@ -475,32 +477,27 @@ begin
     pnlMenu.Visible:=false;
     Memo1.Visible:=false;
 
-    StringGrid1.Visible:=true;
-    StringGrid1.Enabled:=false;
-    StringGrid1.left:=pnlMenu.Left;;
-    StringGrid1.top:=pnlMenu.Top;
-    StringGrid1.Width:=pnlMenu.Width;
-    StringGrid1.Height:=pnlMenu.Height;
-    stringgrid1.DefaultColWidth:=207;
+    pnlMenu.Visible:=false;
 
-    StringGrid1.Cells[0,0]:='Botão';
-    StringGrid1.Cells[1,0]:='Ação';
 
-    StringGrid1.Cells[0,0]:='Botão';
-    StringGrid1.Cells[1,0]:='Ação';
-    StringGrid1.Cells[0,1]:='ESPAÇO';
-    StringGrid1.Cells[1,1]:='Atirar';
-    StringGrid1.Cells[0,2]:='DIRECIONAL ESQUERDO';
-    StringGrid1.Cells[1,2]:='Mover nave para esquerda';
-    StringGrid1.Cells[0,3]:='DIRECIONAL DIREITO';
-    StringGrid1.Cells[1,3]:='Mover nave para direita';
+   inicializaMemo;
+   Memo1.Font.Size:=12;
+   Memo1.lines.LoadFromFile('arq/arq_controles.txt');
 end;
 
 procedure TForm1.btnInstrucoesClick(Sender: TObject);
 begin
    pnlMenu.Visible:=false;
-   StringGrid1.Visible:=false;
 
+
+   inicializaMemo;
+   Memo1.ScrollBars:=ssVertical;
+   Memo1.lines.LoadFromFile('arq/arq_historia.txt');
+end;
+
+procedure TForm1.inicializaMemo();
+begin
+   Memo1.WantReturns:=true;
    Memo1.Visible:=true;
    Memo1.Enabled:=true;
    Memo1.Left := pnlMenu.Left;
@@ -508,6 +505,22 @@ begin
    Memo1.Width:=pnlMenu.Width;
    Memo1.Height:=pnlMenu.Height;
    Memo1.Text:='';
+end;
+
+procedure TForm1.telaFimJogo();
+var
+  pont:string;
+begin
+   inicializaMemo;
+   Memo1.Visible:=true;
+   pont:=string.Parse(pontuacao);
+   Memo1.Text:=#13+#10+#13+#10+'              GAME OVER';
+   Memo1.Text:=Memo1.Text+#13+#10+#13+#10+'       Você obteve: ';
+   Memo1.Text:=Memo1.Text+pont + ' pts';
+   Memo1.Text:=Memo1.Text+#13+#10+'       Foi até a wave: ';
+   Memo1.Text:=Memo1.Text+string.Parse(faseAtual);
+   Memo1.Text:=Memo1.Text+#13+#10+'       Naves abatidas: ';
+   Memo1.Text:=Memo1.Text+string.Parse(totalNavesDestruidas);
 end;
 
 end.

@@ -1,0 +1,6 @@
+CONTROLES:
+------------------------------------------------------------------------------
+Direcional Esquerdo - Mover para esquerda
+Direcional Direito - Mover para direita
+Espaco - Atirar
+
