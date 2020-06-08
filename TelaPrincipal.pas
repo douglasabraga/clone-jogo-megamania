@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, Vcl.ExtCtrls,
-  Vcl.StdCtrls;
+  Vcl.StdCtrls, Vcl.Grids;
 
 type
   TForm1 = class(TForm)
@@ -36,6 +36,15 @@ type
     Label1: TLabel;
     Label2: TLabel;
     TAtualizaEnergia: TTimer;
+    btnJogar: TButton;
+    btnControles: TButton;
+    btnInstrucoes: TButton;
+    pnlMenu: TPanel;
+    Label3: TLabel;
+    Memo1: TMemo;
+    Label4: TLabel;
+    StringGrid1: TStringGrid;
+    imgRestart: TImage;
 
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
@@ -53,6 +62,10 @@ type
     function  VerificaColisao(O1, O2 : TControl):boolean;
     function  setTag(tag : integer):integer;
     function  setCorEnemy(tag : integer):string;
+    procedure btnJogarClick(Sender: TObject);
+    procedure btnInstrucoesClick(Sender: TObject);
+    procedure btnControlesClick(Sender: TObject);
+    procedure MenuPrincipal();
 
 
   private
@@ -79,17 +92,7 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   Randomize;
-   faseAtual:=1;
-   fire.Left:= -50;
-   NumeroNaves:=3;
-   life :=5;
-   energia:= 400;
-   energiaRed:=0;
-   navesDestruidasPorWave:=0;
-   pontuacao:=0;
-   DoubleBuffered := true;
-   endGame          := false;
+   MenuPrincipal;
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
@@ -147,16 +150,20 @@ end;
 function TForm1.setTag(tag : integer):integer;
 begin
    //Nave Inimiga de cor laranja
-   if (Tag >= 16) and (faseAtual >= 15) and
-      (1 + Random(100) <= faseAtual+(1 + Random(faseAtual+10))) then
+
+//   if (Tag >= 16) and (faseAtual >= 15) and
+//      (1 + Random(100) <= faseAtual+(1 + Random(faseAtual+10))) then
+   if (Tag >= 16) and (faseAtual >= 15) then
        begin
          Result:=16;
        end
    //Nave Inimiga de cor verde
-   else if (Tag >= 12) and (faseAtual >= 10) and
-      (1 + Random(100) <= faseAtual+(1 + Random(faseAtual+10))) then
+
+//   else if (Tag >= 12) and (faseAtual >= 10) and
+//      (1 + Random(100) <= faseAtual+(1 + Random(faseAtual+10))) then
+   else if (Tag >= 13) and (faseAtual >= 10) then
        begin
-         Result:=12;
+         Result:=13;
        end
    //Nave Inimiga de cor cinza
    else
@@ -169,7 +176,7 @@ begin
    begin
      Result:='img/enemyBlack.png';
    end
-   else if Tag <= 12 then
+   else if Tag <= 13 then
    begin
      Result:='img/enemyGreen.png';
    end
@@ -201,6 +208,7 @@ begin
       if pnlEnergiaRed.Left<=painelEnergia.Left then
       begin
         endGame:=true;
+        MenuPrincipal;
       end;
 
     end;
@@ -236,7 +244,7 @@ begin
       fire.Left := nave.Left+26;
       fire.Top := nave.top-20;
       semMunicao();
-      energiaRed:=energiaRed+20;
+      energiaRed:=energiaRed+15;
   end;
 end;
 
@@ -251,12 +259,12 @@ begin
          begin
             if Timage(form1.Components[i]).tag > 9 then
             begin
-               if (Timage(form1.Components[i]).Tag = 10)  and (faseAtual > 9) then
-                  begin
-                    Timage(form1.Components[i]).Top := Timage(form1.Components[i]).Top + 2;
-                  end
-                  else
-                    Timage(form1.Components[i]).Top := Timage(form1.Components[i]).Top + 1;
+//               if (Timage(form1.Components[i]).Tag = 10)  and (faseAtual > 9) then
+//                  begin
+//                    Timage(form1.Components[i]).Top := Timage(form1.Components[i]).Top + 2;
+//                  end
+//                  else
+               Timage(form1.Components[i]).Top := Timage(form1.Components[i]).Top + 1;
                if Timage(form1.Components[i]).Top > form1.Height then
                begin
                //Decremento de 10 de energia na nave aliada
@@ -392,6 +400,7 @@ begin
    begin
      life1.Visible := false;
      endGame := true;
+     MenuPrincipal;
    end;
 end;
 
@@ -410,6 +419,95 @@ begin
   fire.Enabled:=true;
   fireStatus.Visible:=false;
   TimerAnimacaoTiro.Enabled:=true;
+end;
+
+
+///RENDERIZAÇÃO DO MENU
+
+procedure TForm1.MenuPrincipal();
+begin
+  //inicializar Variaveis
+  Randomize;
+  faseAtual:=1;
+  NumeroNaves:=3;
+  life :=5;
+  energiaRed:=0;
+  navesDestruidasPorWave:=0;
+  pontuacao:=0;
+  DoubleBuffered := true;
+  endGame := false;
+
+  //Mostrar Menu
+  btnJogar.Visible:=true;
+  btnControles.Visible:=true;
+  btnInstrucoes.Visible:=true;
+  pnlMenu.Visible:=true;
+end;
+
+procedure TForm1.btnJogarClick(Sender: TObject);
+begin
+
+    //Habilitar Jogo
+    TMover.Enabled := true;
+    TCriador.Enabled := true;
+    TimerLiberacaoTiro.Enabled :=true;
+    TGeraFase.Enabled:= true;
+    TAtualizaEnergia.Enabled:=true;
+    Panel1.Visible:=true;
+    Panel1.Enabled:=true;
+    nave.Visible:=true;
+    nave.Enabled:=true;
+    nave.Top:=526;
+    nave.Left:=314;
+
+    //Desabilitar Menu
+    btnJogar.visible:=false;
+    btnControles.Visible:=false;
+    btnInstrucoes.Visible:=false;
+
+    pnlMenu.Visible:=false;
+    Memo1.Visible:=false;
+    StringGrid1.Visible:=false;
+end;
+
+procedure TForm1.btnControlesClick(Sender: TObject);
+begin
+    pnlMenu.Visible:=false;
+    Memo1.Visible:=false;
+
+    StringGrid1.Visible:=true;
+    StringGrid1.Enabled:=false;
+    StringGrid1.left:=pnlMenu.Left;;
+    StringGrid1.top:=pnlMenu.Top;
+    StringGrid1.Width:=pnlMenu.Width;
+    StringGrid1.Height:=pnlMenu.Height;
+    stringgrid1.DefaultColWidth:=207;
+
+    StringGrid1.Cells[0,0]:='Botão';
+    StringGrid1.Cells[1,0]:='Ação';
+
+    StringGrid1.Cells[0,0]:='Botão';
+    StringGrid1.Cells[1,0]:='Ação';
+    StringGrid1.Cells[0,1]:='ESPAÇO';
+    StringGrid1.Cells[1,1]:='Atirar';
+    StringGrid1.Cells[0,2]:='DIRECIONAL ESQUERDO';
+    StringGrid1.Cells[1,2]:='Mover nave para esquerda';
+    StringGrid1.Cells[0,3]:='DIRECIONAL DIREITO';
+    StringGrid1.Cells[1,3]:='Mover nave para direita';
+end;
+
+procedure TForm1.btnInstrucoesClick(Sender: TObject);
+begin
+   pnlMenu.Visible:=false;
+   StringGrid1.Visible:=false;
+
+   Memo1.Visible:=true;
+   Memo1.Enabled:=true;
+   Memo1.Left := pnlMenu.Left;
+   Memo1.Top:=pnlMenu.Top;
+   Memo1.Width:=pnlMenu.Width;
+   Memo1.Height:=pnlMenu.Height;
+   Memo1.Text:='';
 end;
 
 end.

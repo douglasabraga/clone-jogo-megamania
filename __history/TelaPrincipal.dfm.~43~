@@ -15,6 +15,7 @@ object Form1: TForm1
   OldCreateOrder = False
   Position = poDesigned
   Visible = True
+  OnClick = habilitarMenu
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   DesignSize = (

@@ -1,10 +1,10 @@
 object Form1: TForm1
   Tag = 5
   AlignWithMargins = True
-  Left = 0
+  Left = 244
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 691
+  ClientHeight = 697
   ClientWidth = 754
   Color = clBackground
   Font.Charset = DEFAULT_CHARSET
@@ -19,16 +19,17 @@ object Form1: TForm1
   OnKeyDown = FormKeyDown
   DesignSize = (
     754
-    691)
+    697)
   PixelsPerInch = 96
   TextHeight = 13
   object nave: TImage
-    Left = 314
-    Top = 526
+    Left = 682
+    Top = 513
     Width = 60
     Height = 50
     ParentCustomHint = False
     Anchors = []
+    Enabled = False
     Picture.Data = {
       0954506E67496D61676589504E470D0A1A0A0000000D49484452000000630000
       004B080600000064C439CE00000FA54944415478DAED9D6B701BD515C7CFEEEA
@@ -161,13 +162,13 @@ object Form1: TForm1
       6D6167652E504E473234456E636F646572A8067FEE0000000049454E44AE4260
       82}
     Stretch = True
-    ExplicitLeft = 318
-    ExplicitTop = 533
+    Visible = False
+    ExplicitTop = 508
   end
   object fire: TImage
     Tag = 5
-    Left = 341
-    Top = 496
+    Left = 709
+    Top = 478
     Width = 9
     Height = 26
     Enabled = False
@@ -189,14 +190,17 @@ object Form1: TForm1
   end
   object Panel1: TPanel
     Left = 0
-    Top = 580
+    Top = 586
     Width = 754
     Height = 111
     Align = alBottom
     BorderStyle = bsSingle
     Color = clMedGray
+    Enabled = False
     ParentBackground = False
     TabOrder = 0
+    Visible = False
+    ExplicitTop = 564
     object labelEnergia: TLabel
       Left = 73
       Top = 1
@@ -476,16 +480,30 @@ object Form1: TForm1
     object lblAux: TLabel
       Left = 600
       Top = 48
-      Width = 29
+      Width = 6
       Height = 13
-      Caption = 'lblAux'
+      Caption = '1'
     end
     object lblAux2: TLabel
       Left = 600
-      Top = 72
-      Width = 35
+      Top = 80
+      Width = 6
       Height = 13
-      Caption = 'lblAux2'
+      Caption = '0'
+    end
+    object Label1: TLabel
+      Left = 563
+      Top = 48
+      Width = 32
+      Height = 13
+      Caption = 'Wave:'
+    end
+    object Label2: TLabel
+      Left = 539
+      Top = 80
+      Width = 56
+      Height = 13
+      Caption = 'NavesDest:'
     end
     object painelEnergia: TPanel
       Left = 182
@@ -507,6 +525,112 @@ object Form1: TForm1
       Visible = False
     end
   end
+  object btnJogar: TButton
+    Left = 241
+    Top = 480
+    Width = 256
+    Height = 30
+    Caption = 'Jogar'
+    TabOrder = 1
+    OnClick = btnJogarClick
+  end
+  object btnControles: TButton
+    Left = 241
+    Top = 449
+    Width = 125
+    Height = 30
+    Caption = 'Controles'
+    TabOrder = 2
+    OnClick = btnControlesClick
+  end
+  object btnInstrucoes: TButton
+    Left = 372
+    Top = 449
+    Width = 125
+    Height = 30
+    Caption = 'Instru'#231#245'es'
+    TabOrder = 3
+    OnClick = btnInstrucoesClick
+  end
+  object pnlMenu: TPanel
+    Left = 159
+    Top = 120
+    Width = 417
+    Height = 307
+    Caption = 'pnlMenu'
+    TabOrder = 4
+    object Label3: TLabel
+      Left = 32
+      Top = 132
+      Width = 337
+      Height = 37
+      Caption = 'Bem Vindo ao MegaMania!'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clFuchsia
+      Font.Height = -29
+      Font.Name = 'System'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label4: TLabel
+      Left = 227
+      Top = 167
+      Width = 173
+      Height = 16
+      Caption = 'Created By Douglas Braga'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clPurple
+      Font.Height = -9
+      Font.Name = 'System'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+  end
+  object Memo1: TMemo
+    Left = 561
+    Top = 0
+    Width = 36
+    Height = 33
+    Color = clBlack
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clTeal
+    Font.Height = -27
+    Font.Name = 'System'
+    Font.Style = [fsBold]
+    Lines.Strings = (
+      'M'
+      'e'
+      'm'
+      'o'
+      '1')
+    ParentFont = False
+    TabOrder = 5
+    Visible = False
+  end
+  object StringGrid1: TStringGrid
+    Left = 603
+    Top = 0
+    Width = 81
+    Height = 33
+    Color = clBlack
+    ColCount = 2
+    DefaultRowHeight = 50
+    FixedColor = clBlack
+    FixedCols = 0
+    RowCount = 4
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clTeal
+    Font.Height = -20
+    Font.Name = 'System'
+    Font.Style = [fsBold]
+    GradientEndColor = clBlack
+    GradientStartColor = clBlack
+    ParentFont = False
+    ScrollBars = ssNone
+    TabOrder = 6
+    Visible = False
+    StyleElements = []
+  end
   object TimerAnimacaoTiro: TTimer
     Enabled = False
     Interval = 1
@@ -515,27 +639,38 @@ object Form1: TForm1
     Top = 104
   end
   object TimerLiberacaoTiro: TTimer
+    Enabled = False
     Interval = 1
     OnTimer = TimerLiberacaoTiroTimer
     Left = 24
     Top = 56
   end
   object TMover: TTimer
+    Enabled = False
     Interval = 2
     OnTimer = TMoverTimer
     Left = 24
     Top = 152
   end
   object TCriador: TTimer
+    Enabled = False
     Interval = 1500
     OnTimer = TCriadorTimer
     Left = 24
     Top = 200
   end
   object TGeraFase: TTimer
+    Enabled = False
     Interval = 3000
     OnTimer = TGeraFaseTimer
-    Left = 640
-    Top = 240
+    Left = 24
+    Top = 248
+  end
+  object TAtualizaEnergia: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = TAtualizaEnergiaTimer
+    Left = 24
+    Top = 296
   end
 end
