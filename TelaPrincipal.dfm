@@ -200,7 +200,6 @@ object Form1: TForm1
     ParentBackground = False
     TabOrder = 0
     Visible = False
-    ExplicitTop = 594
     object labelEnergia: TLabel
       Left = 73
       Top = 1
@@ -586,8 +585,8 @@ object Form1: TForm1
     object Label3: TLabel
       Left = 32
       Top = 132
-      Width = 337
-      Height = 37
+      Width = 348
+      Height = 32
       Caption = 'Bem Vindo ao MegaMania!'
       Font.Charset = ANSI_CHARSET
       Font.Color = clFuchsia
@@ -618,11 +617,12 @@ object Form1: TForm1
     Color = clBlack
     Font.Charset = ANSI_CHARSET
     Font.Color = clTeal
-    Font.Height = -27
+    Font.Height = -16
     Font.Name = 'System'
     Font.Style = [fsBold]
     ParentFont = False
     ReadOnly = True
+    ScrollBars = ssVertical
     TabOrder = 5
     Visible = False
   end
@@ -667,5 +667,11 @@ object Form1: TForm1
     OnTimer = TAtualizaEnergiaTimer
     Left = 24
     Top = 296
+  end
+  object TMusic: TTimer
+    Interval = 250000
+    OnTimer = TMusicTimer
+    Left = 24
+    Top = 344
   end
 end

@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, Vcl.ExtCtrls,
-  Vcl.StdCtrls, Vcl.Grids, ArquivosUnit;
+  Vcl.StdCtrls, Vcl.Grids, ArquivosUnit, Vcl.MPlayer;
 
 type
   TForm1 = class(TForm)
@@ -43,6 +43,7 @@ type
     Label3: TLabel;
     Memo1: TMemo;
     Label4: TLabel;
+    TMusic: TTimer;
 
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
@@ -65,7 +66,9 @@ type
     procedure btnControlesClick(Sender: TObject);
     procedure MenuPrincipal();
     procedure telaFimJogo();
-    procedure inicializaMemo();
+    procedure inicializaMemo(lerArq:boolean; diretorio : string);
+    procedure TMusicTimer(Sender: TObject);
+    procedure habilitaBotoesMenu(op : boolean);
 
 
   private
@@ -86,12 +89,14 @@ var
   geradorNaves: integer;
   energia : integer;
   energiaRed: integer;
-
+  tm:TMediaPlayer;
+  tmFundo:TMediaPlayer;
 implementation
 
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
+
 begin
     Randomize;
     faseAtual:=1;
@@ -103,8 +108,20 @@ begin
     pontuacao:=0;
     DoubleBuffered := true;
     endGame := false;
-    MenuPrincipal;
 
+    tm:=TMediaPlayer.Create(Form1);
+    tm.Parent:=Form1;
+    tm.Visible:=false;
+    tm.FileName:='sounds/som_explosion (online-audio-converter.com).mp3';
+//    tm.Open;
+
+    tmFundo:=TMediaPlayer.Create(Form1);
+    tmFundo.Parent:=Form1;
+    tmFundo.Visible:=false;
+    MenuPrincipal;
+    tmFundo.FileName:='sounds\som_menu (online-audio-converter.com).mp3';
+    tmFundo.Open;
+    tmFundo.Play;
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
@@ -272,8 +289,8 @@ begin
                if Timage(form1.Components[i]).Top > form1.Height then
                begin
                //Decremento de 10 de energia na nave aliada
-                  pnlEnergiaRed.Left:=pnlEnergiaRed.Left-5;
-                  pnlEnergiaRed.Width:=pnlEnergiaRed.Width+5;
+//                  pnlEnergiaRed.Left:=pnlEnergiaRed.Left-5;
+//                  pnlEnergiaRed.Width:=pnlEnergiaRed.Width+5;
 
                   Timage(form1.Components[i]).Top    := -20;
                   Timage(form1.Components[i]).Left   := Random(form1.Width - 50);
@@ -286,6 +303,13 @@ begin
          end;
        end;
    end;
+end;
+
+procedure TForm1.TMusicTimer(Sender: TObject);
+begin
+  tmFundo.FileName:='sounds\som_Chapeleiro_Mamba_Negra.mp3';
+  tmFundo.Open;
+  tmFundo.Play;
 end;
 
 function TForm1.VerificaColisao(O1, O2 : TControl): boolean;
@@ -334,12 +358,20 @@ begin
         if o1.Tag = 5 then
         begin
           comMunicao();
+          //decrementra vida inimiga
           o2.Tag:=o2.Tag-1;
+          //mutacao
           Timage(o2).Picture.LoadFromFile(setCorEnemy(o2.Tag));
+          //inimigo destruido
           if o2.Tag < 10 then
           begin
             o2.Visible := false;
             o2.Enabled := false;
+
+//            TMusic.
+            tm.Open;
+            tm.Play;
+
             navesDestruidasPorWave:=navesDestruidasPorWave+1;
             totalNavesDestruidas:=totalNavesDestruidas+1;
 //            if pnlEnergiaRed.Visible and (pnlEnergiaRed.Left>painelEnergia.Left) then
@@ -369,10 +401,16 @@ begin
           atualizaVida();
           o2.Visible := false;
           o2.Enabled := false;
+
+//          tm.FileName:='sounds/som_explosion.wav';
+          tm.Open;
+          tm.Play;
+
           navesDestruidasPorWave:=navesDestruidasPorWave+1;
           totalNavesDestruidas:=totalNavesDestruidas+1;
         end;
 
+//        tm.FileName:='sounds/som_explosion.wav';
 
         lblQntdNavesDestruidas.Caption:=string.Parse(TotalNavesDestruidas);
       end;
@@ -406,6 +444,8 @@ begin
      life1.Visible := false;
      endGame := true;
      telaFimJogo;
+
+     //Fechar painel de status do jogo
      Panel1.Visible:=false;
      nave.Visible:=false;
    end;
@@ -431,24 +471,21 @@ end;
 
 ///RENDERIZAÇÃO DO MENU
 
+procedure TForm1.habilitaBotoesMenu(op : boolean);
+begin
+  btnJogar.Visible:=op;
+  btnControles.Visible:=op;
+  btnInstrucoes.Visible:=op;
+end;
+
 procedure TForm1.MenuPrincipal();
 begin
-
-  //Mostrar Menu
-  nave.Visible:=false;
-  Panel1.Visible:=false;
-  btnJogar.Visible:=true;
-  btnControles.Visible:=true;
-  btnInstrucoes.Visible:=true;
+  habilitaBotoesMenu(true);
   pnlMenu.Visible:=true;
 end;
 
 procedure TForm1.btnJogarClick(Sender: TObject);
 begin
-
-  //inicializar Variaveis
-
-
     //Habilitar Jogo
     TMover.Enabled := true;
     TCriador.Enabled := true;
@@ -463,64 +500,48 @@ begin
     nave.Left:=314;
 
     //Desabilitar Menu
-    btnJogar.visible:=false;
-    btnControles.Visible:=false;
-    btnInstrucoes.Visible:=false;
-
+    habilitaBotoesMenu(false);
     pnlMenu.Visible:=false;
     Memo1.Visible:=false;
-
 end;
 
 procedure TForm1.btnControlesClick(Sender: TObject);
 begin
-    pnlMenu.Visible:=false;
-    Memo1.Visible:=false;
-
-    pnlMenu.Visible:=false;
-
-
-   inicializaMemo;
-   Memo1.Font.Size:=12;
-   Memo1.lines.LoadFromFile('arq/arq_controles.txt');
+   inicializaMemo(true, 'arq/arq_controles.txt');
 end;
 
 procedure TForm1.btnInstrucoesClick(Sender: TObject);
 begin
-   pnlMenu.Visible:=false;
-
-
-   inicializaMemo;
-   Memo1.ScrollBars:=ssVertical;
-   Memo1.lines.LoadFromFile('arq/arq_historia.txt');
+   inicializaMemo(true, 'arq/arq_historia.txt');
 end;
 
-procedure TForm1.inicializaMemo();
+procedure TForm1.inicializaMemo(lerArq:boolean; diretorio:string);
 begin
+   pnlMenu.Visible:=false;
    Memo1.WantReturns:=true;
    Memo1.Visible:=true;
-   Memo1.Enabled:=true;
    Memo1.Left := pnlMenu.Left;
    Memo1.Top:=pnlMenu.Top;
    Memo1.Width:=pnlMenu.Width;
    Memo1.Height:=pnlMenu.Height;
-   Memo1.Text:='';
+   if lerArq then Memo1.lines.LoadFromFile(diretorio);
 end;
 
 procedure TForm1.telaFimJogo();
-var
-  pont:string;
 begin
-   inicializaMemo;
-   Memo1.Visible:=true;
-   pont:=string.Parse(pontuacao);
+   inicializaMemo(false, '');
+   Memo1.Font.Size:=20;
+   Memo1.ScrollBars:=ssNone;
    Memo1.Text:=#13+#10+#13+#10+'              GAME OVER';
    Memo1.Text:=Memo1.Text+#13+#10+#13+#10+'       Você obteve: ';
-   Memo1.Text:=Memo1.Text+pont + ' pts';
+   Memo1.Text:=Memo1.Text+string.Parse(pontuacao) + ' pts';
    Memo1.Text:=Memo1.Text+#13+#10+'       Foi até a wave: ';
    Memo1.Text:=Memo1.Text+string.Parse(faseAtual);
    Memo1.Text:=Memo1.Text+#13+#10+'       Naves abatidas: ';
    Memo1.Text:=Memo1.Text+string.Parse(totalNavesDestruidas);
+
+   TMusic.Enabled:=false;
+   tmFundo.Enabled:=false;
 end;
 
 end.
