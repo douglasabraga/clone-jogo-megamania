@@ -47,6 +47,7 @@ type
 
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject);
 
     procedure TimerAnimacaoTiroTimer(Sender: TObject);
     procedure TimerLiberacaoTiroTimer(Sender: TObject);
@@ -74,7 +75,6 @@ type
     procedure inicializaMemo(lerArq:boolean; diretorio : string);
     procedure habilitaBotoesMenu(op : boolean);
 
-
   private
     { Private declarations }
   public
@@ -93,6 +93,7 @@ var
   geradorNaves: integer;
   energia: integer;
   tmExplosao: TMediaPlayer;
+  tmTiro: TMediaPlayer;
   tmFundo: TMediaPlayer;
 implementation
 
@@ -114,13 +115,19 @@ begin
     tmExplosao:=TMediaPlayer.Create(Form1);
     tmExplosao.Parent:=Form1;
     tmExplosao.Visible:=false;
-    tmExplosao.FileName:='sounds/som_explosao.mp3';
+    tmExplosao.FileName:='sounds/som_explosao.wav';
     tmExplosao.Open;
+
+    tmTiro:=TMediaPlayer.Create(Form1);
+    tmTiro.Parent:=Form1;
+    tmTiro.Visible:=false;
+    tmTiro.FileName:='sounds/som_tiro.wav';
+    tmTiro.Open;
 
     tmFundo:=TMediaPlayer.Create(Form1);
     tmFundo.Parent:=Form1;
     tmFundo.Visible:=false;
-    tmFundo.FileName:='sounds\som_fundo.mp3';
+    tmFundo.FileName:='sounds\som_fundo2.mp3';
     tmFundo.Open;
     tmFundo.Play;
 
@@ -215,7 +222,6 @@ begin
    pnlEnergiaRed.Left  := painelEnergia.Left + painelEnergia.Width - 3;
    pnlEnergiaRed.Width := 3;
   end;
-
   //zerar energia Utilizavel
   if pnlEnergiaRed.Left <= painelEnergia.Left then
   begin
@@ -255,6 +261,8 @@ begin
       fire.Left := nave.Left + 26;
       fire.Top := nave.top - 20;
       semMunicao();
+      tmTiro.Rewind;
+      tmTiro.Play;
   end;
 end;
 
@@ -290,9 +298,24 @@ begin
 end;
 
 procedure TForm1.TMusicTimer(Sender: TObject);
+var aux:integer;
 begin
-  tmFundo.Rewind;
-  tmFundo.Play;
+  if (faseAtual >= 9) and (faseAtual <= 20)  then
+  begin
+  //260000
+    TMusic.Interval := 260000;
+    tmFundo.FileName := 'sounds/som_fundo1.mp3';
+    tmFundo.open;
+    tmFundo.Play;
+  end;
+  if faseAtual >= 21 then
+  begin
+  //610000
+    TMusic.Interval := 610000;
+    tmFundo.FileName := 'sounds/som_fundo3.mp3';
+    tmFundo.open;
+    tmFundo.Play;
+  end;
 end;
 
 function TForm1.VerificaColisao(O1, O2 : TControl): boolean;
@@ -336,11 +359,13 @@ begin
           //inimigo destruido
           if o2.Tag < 10 then
           begin
+            tmExplosao.Rewind;
+            tmExplosao.Play;
+
             o2.Visible := false;
             o2.Enabled := false;
 
-            tmExplosao.Rewind;
-            tmExplosao.Play;
+
 
             inc(navesDestruidasPorWave);
             inc(totalNavesDestruidas);
@@ -359,11 +384,12 @@ begin
         if o1.Tag = 0 then
         begin
           atualizaVida;
-          o2.Visible := false;
-          o2.Enabled := false;
 
           tmExplosao.Rewind;
           tmExplosao.Play;
+
+          o2.Visible := false;
+          o2.Enabled := false;
 
           inc(navesDestruidasPorWave);
           inc(totalNavesDestruidas);
@@ -526,6 +552,11 @@ begin
    Memo1.Height:=pnlMenu.Height;
    if lerArq then Memo1.lines.LoadFromFile(diretorio);
    Memo1.Visible:=true;
+end;
+
+procedure TForm1.FormClose(Sender: TObject);
+begin
+//teste
 end;
 
 end.

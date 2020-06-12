@@ -1,3 +1,4 @@
+------------------------------------------------------------------------------
 HISTÓRIA
 ------------------------------------------------------------------------------
 Numa nave espacial, embarque, em busca de uma aventura
@@ -10,11 +11,17 @@ Você dita o seu futuro, você dita sua aventura!
 
 Esse é o Seu Destino!
 
-
+------------------------------------------------------------------------------
 =>INSTRUÇÕES
 ------------------------------------------------------------------------------
+Nesse jogo foi adotado um sistema de waves(fases), a cada fase a dificuldade e o numero de inimigos AUMENTA.
+
+O numero de inimigos é gerado a partir da seguinte fórmula:
+ ->  ((O numero da wave * (Valor aleatório entre 1 e 3)).)
+ 
 O jogo só termina se voce chegar a um total de 0 vidas, iniciando com 5,
-ou se a barra de energia ficar totalmente vermelha.
+ou se a barra de energia ficar
+totalmente vermelha.
 
 Existem tres tipos de inimigos:
 -> enemyBlack(1 vida, aparição a qualquer momento),
@@ -26,9 +33,10 @@ ele sofre uma mutacao para o enemyGreen(100 pts),
 que faz o mesmo processo para enemyBlack(75 pts),
 e a destruição do mesmo soma-se mais 50 pts.
 
-Perde-se vida ao chocar com a nave inimiga, e perde-se energia ao movimentar a nave, atirar,
-e deixar um inimigo passar por você.
-
+Perde-se vida ao chocar com a nave inimiga, e perde-se
+energia ao movimentar a nave, atirar, e deixar
+um inimigo passar por você.
+------------------------------------------------------------------------------
 =>PONTUAÇÕES
 ------------------------------------------------------------------------------
 Há duas formas de pontuar, destruindo um inimigo(50 pts) ou forçando uma mutação inimiga:
