@@ -582,7 +582,7 @@ object Form1: TForm1
     Height = 307
     Caption = 'pnlMenu'
     TabOrder = 4
-    object Label3: TLabel
+    object lblSaudacao: TLabel
       Left = 32
       Top = 132
       Width = 348
@@ -595,7 +595,7 @@ object Form1: TForm1
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object Label4: TLabel
+    object lblCriadorDoGame: TLabel
       Left = 227
       Top = 167
       Width = 173
@@ -617,11 +617,12 @@ object Form1: TForm1
     Color = clBlack
     Font.Charset = ANSI_CHARSET
     Font.Color = clTeal
-    Font.Height = -27
+    Font.Height = -16
     Font.Name = 'System'
     Font.Style = [fsBold]
     ParentFont = False
     ReadOnly = True
+    ScrollBars = ssVertical
     TabOrder = 5
     Visible = False
   end
@@ -668,8 +669,7 @@ object Form1: TForm1
     Top = 296
   end
   object TMusic: TTimer
-    Enabled = False
-    Interval = 380000
+    Interval = 250000
     OnTimer = TMusicTimer
     Left = 24
     Top = 344

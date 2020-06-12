@@ -545,7 +545,6 @@ object Form1: TForm1
       Color = clRed
       ParentBackground = False
       TabOrder = 1
-      Visible = False
     end
   end
   object btnJogar: TButton
@@ -582,7 +581,7 @@ object Form1: TForm1
     Height = 307
     Caption = 'pnlMenu'
     TabOrder = 4
-    object Label3: TLabel
+    object lblSaudacao: TLabel
       Left = 32
       Top = 132
       Width = 348
@@ -595,7 +594,7 @@ object Form1: TForm1
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object Label4: TLabel
+    object lblCriadorDoGame: TLabel
       Left = 227
       Top = 167
       Width = 173
@@ -662,7 +661,6 @@ object Form1: TForm1
     Top = 248
   end
   object TAtualizaEnergia: TTimer
-    Enabled = False
     Interval = 1
     OnTimer = TAtualizaEnergiaTimer
     Left = 24
