@@ -667,7 +667,7 @@ object Form1: TForm1
     Top = 296
   end
   object TMusic: TTimer
-    Interval = 250000
+    Interval = 260000
     OnTimer = TMusicTimer
     Left = 24
     Top = 344

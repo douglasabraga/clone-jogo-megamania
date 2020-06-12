@@ -61,6 +61,7 @@ type
     procedure comMunicao();
     procedure semMunicao();
     procedure atualizaVida();
+    procedure atualizaPontuacao(tag : integer);
 
     function  setTag(tag : integer):integer;
     function  setCorEnemy(tag : integer):string;
@@ -91,8 +92,7 @@ var
   NumeroNaves: integer;
   geradorNaves: integer;
   energia: integer;
-//  energiaRed: integer;
-  tm: TMediaPlayer;
+  tmExplosao: TMediaPlayer;
   tmFundo: TMediaPlayer;
 implementation
 
@@ -105,22 +105,22 @@ begin
     faseAtual              := 1;
     NumeroNaves            := 3;
     life                   := 5;
-//    energiaRed             := 0;
     totalNavesDestruidas   := 0;
     navesDestruidasPorWave := 0;
     pontuacao              := 0;
     DoubleBuffered         := true;
     endGame                := false;
 
-//    tm:=TMediaPlayer.Create(Form1);
-//    tm.Parent:=Form1;
-//    tm.Visible:=false;
-//    tm.FileName:='sounds/som_explosion (online-audio-converter.com).mp3';
+    tmExplosao:=TMediaPlayer.Create(Form1);
+    tmExplosao.Parent:=Form1;
+    tmExplosao.Visible:=false;
+    tmExplosao.FileName:='sounds/som_explosao.mp3';
+    tmExplosao.Open;
 
     tmFundo:=TMediaPlayer.Create(Form1);
     tmFundo.Parent:=Form1;
     tmFundo.Visible:=false;
-    tmFundo.FileName:='sounds\som_menu (online-audio-converter.com).mp3';
+    tmFundo.FileName:='sounds\som_fundo.mp3';
     tmFundo.Open;
     tmFundo.Play;
 
@@ -129,7 +129,6 @@ end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
-
   var incremento : integer;
 
 begin
@@ -217,10 +216,10 @@ begin
    pnlEnergiaRed.Width := 3;
   end;
 
+  //zerar energia Utilizavel
   if pnlEnergiaRed.Left <= painelEnergia.Left then
   begin
     pnlEnergiaRed.Left := painelEnergia.Left;
-//    endGame := true;
     telaFimJogo;
   end
 end;
@@ -230,13 +229,13 @@ begin
    if (NumeroNaves - navesDestruidasPorWave = 0) then
    begin
       geradorNaves:= 0;
-      navesDestruidasPorWave:=0;
-      faseAtual := faseAtual+1;
+      navesDestruidasPorWave := 0;
+      faseAtual := faseAtual + 1;
       NumeroNaves:= faseAtual*(1 + Random(3));
       lblQntdWave.Caption:=string.Parse(faseAtual);
-      pnlEnergiaRed.Enabled:=false;
-      pnlEnergiaRed.Width:=3;
-      pnlEnergiaRed.Left:=579;
+      //zerar energia perdida
+      pnlEnergiaRed.Left  := painelEnergia.Left + painelEnergia.Width - 3;
+      pnlEnergiaRed.Width := 3;
    end;
 end;
 
@@ -256,7 +255,6 @@ begin
       fire.Left := nave.Left + 26;
       fire.Top := nave.top - 20;
       semMunicao();
-//      energiaRed:=energiaRed+15;
   end;
 end;
 
@@ -293,47 +291,36 @@ end;
 
 procedure TForm1.TMusicTimer(Sender: TObject);
 begin
-  tmFundo.FileName:='sounds\som_menu (online-audio-converter.com).mp3';
-  tmFundo.Open;
+  tmFundo.Rewind;
   tmFundo.Play;
 end;
 
 function TForm1.VerificaColisao(O1, O2 : TControl): boolean;
 var topo, baixo, esquerda, direita : boolean;
-    //VAR PONTUACAO///////////////////
-    aux : integer;
-    concatenar : string;
-    /////////////////////////////////
 begin
     topo     := false;
     baixo    := false;
     esquerda := false;
     direita  := false;
 
-//    label2.Caption := '';
-
     if (O1.Top >= O2.top ) and (O1.top  <= O2.top  + O2.Height) then
     begin
        topo := true;
-//       label2.Caption := label2.Caption+ 'Topo, ';
     end;
 
     if (O1.left >= O2.left) and (O1.left <= O2.left + O2.Width ) then
     begin
       esquerda := true;
-//      label2.Caption := label2.Caption+ ' Esquerda, ';
     end;
 
     if (O1.top + O1.Height >= O2.top ) and (O1.top + O1.Height  <= O2.top + O2.Height) then
     begin
       baixo := true;
-//      label2.Caption := label2.Caption+ ' Baixo, ';
     end;
 
     if (O1.left + O1.Width >= O2.left ) and (O1.left + O1.Width  <= O2.left + O2.Width) then
     begin
       direita := true;
-//      label2.Caption := label2.Caption+ ' Direita ';
     end;
 
     if (topo or baixo) and (esquerda or direita) then
@@ -343,67 +330,82 @@ begin
        //Colisão tiro aliado e nave inimiga
         if o1.Tag = 5 then
         begin
-          comMunicao();
+          comMunicao;
           //decrementra vida inimiga
-          o2.Tag:=o2.Tag-1;
-          //mutacao
-          Timage(o2).Picture.LoadFromFile(setCorEnemy(o2.Tag));
+          o2.Tag := o2.Tag - 1;
           //inimigo destruido
           if o2.Tag < 10 then
           begin
             o2.Visible := false;
             o2.Enabled := false;
 
-//            TMusic.
-//            tm.Open;
-//            tm.Play;
+            tmExplosao.Rewind;
+            tmExplosao.Play;
 
-            navesDestruidasPorWave:=navesDestruidasPorWave+1;
-            totalNavesDestruidas:=totalNavesDestruidas+1;
-//            if pnlEnergiaRed.Visible and (pnlEnergiaRed.Left>painelEnergia.Left) then
-               pnlEnergiaRed.Left := pnlEnergiaRed.Left+9;
-               pnlEnergiaRed.Width := pnlEnergiaRed.Width-9;
-            ////PONTUACAO////////// PROCEDURE //////////////////
-            pontuacao:=pontuacao+250;
-            concatenar:= '';
-            aux:= length(pontos.Caption) - length(string.Parse(pontuacao));
+            inc(navesDestruidasPorWave);
+            inc(totalNavesDestruidas);
 
-            while aux > 0 do
-            begin
-              concatenar:=concatenar + '0';
-              aux:=aux-1;
-
-              if aux=0 then
-                pontos.Caption:= concatenar + string.Parse(pontuacao);
-
-            end;
-          //////////////////////////////////////////////////////////
+            pnlEnergiaRed.Width := pnlEnergiaRed.Width-9;
+            pnlEnergiaRed.Left := pnlEnergiaRed.Left+9;
+          end
+          else
+          begin
+            //mutacao
+            Timage(o2).Picture.LoadFromFile(setCorEnemy(o2.Tag));
           end;
+          atualizaPontuacao(o2.Tag);
         end;
-
-       //Colisão nave aliada e nave inimiga
+        //Colisão nave aliada e nave inimiga
         if o1.Tag = 0 then
         begin
-          atualizaVida();
+          atualizaVida;
           o2.Visible := false;
           o2.Enabled := false;
 
-//          tm.FileName:='sounds/som_explosion.wav';
-//          tm.Open;
-//          tm.Play;
+          tmExplosao.Rewind;
+          tmExplosao.Play;
 
-          navesDestruidasPorWave:=navesDestruidasPorWave+1;
-          totalNavesDestruidas:=totalNavesDestruidas+1;
+          inc(navesDestruidasPorWave);
+          inc(totalNavesDestruidas);
         end;
-
-//        tm.FileName:='sounds/som_explosion.wav';
 
         lblQntdNavesDestruidas.Caption:=string.Parse(TotalNavesDestruidas);
       end;
-
     end;
-
     VerificaColisao := (topo or baixo) and (esquerda or direita);
+end;
+
+procedure TForm1.atualizaPontuacao(tag : integer);
+var
+  tamLblPontos : integer;
+  zerosAEsquerda : string;
+begin
+
+  if tag < 10 then
+  begin
+     pontuacao := pontuacao + 50;
+  end
+  else if tag = 10 then
+  begin
+     pontuacao := pontuacao + 75;
+  end
+  else if tag = 13 then
+  begin
+     pontuacao := pontuacao + 100;
+  end;
+
+  zerosAEsquerda:= '';
+  tamLblPontos:= length(pontos.Caption) - length(string.Parse(pontuacao));
+
+  while tamLblPontos > 0 do
+  begin
+    zerosAEsquerda := zerosAEsquerda + '0';
+    tamLblPontos   := tamLblPontos-1;
+
+    if tamLblPontos = 0 then
+      pontos.Caption := zerosAEsquerda + string.Parse(pontuacao);
+
+  end;
 end;
 
 procedure TForm1.atualizaVida();
@@ -428,11 +430,7 @@ begin
    if life = 0 then
    begin
      life1.Visible := false;
-
      telaFimJogo;
-
-     //Fechar painel de status do jogo
-
    end;
 end;
 
@@ -453,7 +451,7 @@ begin
   TimerAnimacaoTiro.Enabled:=true;
 end;
 
-///RENDERIZAÇÃO DO MENU
+///RENDERIZAÇÃO DE TELAS
 
 procedure TForm1.habilitaBotoesMenu(op : boolean);
 begin
@@ -465,7 +463,7 @@ end;
 procedure TForm1.MenuPrincipal();
 begin
   habilitaBotoesMenu(true);
-  pnlMenu.Visible:=true;
+  pnlMenu.Visible := true;
 end;
 
 procedure TForm1.btnJogarClick(Sender: TObject);
@@ -475,7 +473,6 @@ begin
     TCriador.Enabled := true;
     TimerLiberacaoTiro.Enabled :=true;
     TGeraFase.Enabled:= true;
-    //TAtualizaEnergia.Enabled:=true;
     Panel1.Visible:=true;
     Panel1.Enabled:=true;
     nave.Visible:=true;
@@ -499,18 +496,6 @@ begin
    inicializaMemo(true, 'arq/arq_historia.txt');
 end;
 
-procedure TForm1.inicializaMemo(lerArq:boolean; diretorio:string);
-begin
-   pnlMenu.Visible:=false;
-   Memo1.WantReturns:=true;
-   Memo1.Left := pnlMenu.Left;
-   Memo1.Top:=pnlMenu.Top;
-   Memo1.Width:=pnlMenu.Width;
-   Memo1.Height:=pnlMenu.Height;
-   if lerArq then Memo1.lines.LoadFromFile(diretorio);
-   Memo1.Visible:=true;
-end;
-
 procedure TForm1.telaFimJogo();
 begin
    inicializaMemo(false, '');
@@ -529,6 +514,18 @@ begin
    tmFundo.Enabled:=false;
    Panel1.Visible:=false;
    nave.Visible:=false;
+end;
+
+procedure TForm1.inicializaMemo(lerArq:boolean; diretorio:string);
+begin
+   pnlMenu.Visible := false;
+   Memo1.WantReturns := true;
+   Memo1.Left := pnlMenu.Left;
+   Memo1.Top := pnlMenu.Top;
+   Memo1.Width := pnlMenu.Width;
+   Memo1.Height:=pnlMenu.Height;
+   if lerArq then Memo1.lines.LoadFromFile(diretorio);
+   Memo1.Visible:=true;
 end;
 
 end.
