@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, Vcl.ExtCtrls,
-  Vcl.StdCtrls, Vcl.Grids, ArquivosUnit, Vcl.MPlayer;
+  Vcl.StdCtrls, Vcl.Grids, Vcl.MPlayer;
 
 type
   TForm1 = class(TForm)
@@ -47,7 +47,7 @@ type
 
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
-    procedure FormClose(Sender: TObject);
+//    procedure FormClose(Sender: TObject);
 
     procedure TimerAnimacaoTiroTimer(Sender: TObject);
     procedure TimerLiberacaoTiroTimer(Sender: TObject);
@@ -75,6 +75,9 @@ type
     procedure inicializaMemo(lerArq:boolean; diretorio : string);
     procedure habilitaBotoesMenu(op : boolean);
 
+//    function lerArquivo(nomeArquivo: String): Boolean;
+    procedure escreverArquivo(nomeArquivo, conteudo: String; adicionar: Boolean);
+
   private
     { Private declarations }
   public
@@ -100,17 +103,38 @@ implementation
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
-
+var
+  auxLife : integer; i:integer; myFile: TextFile;
+  auxMemo: TMemo;
 begin
     Randomize;
-    faseAtual              := 1;
-    NumeroNaves            := 3;
-    life                   := 5;
-    totalNavesDestruidas   := 0;
-    navesDestruidasPorWave := 0;
-    pontuacao              := 0;
+    life :=  5;
+//    auxMemo.Lines.LoadFromFile('saveGame.txt');
+    if(FileExists('saveGame.txt') = True) then
+    begin
+
+      AssignFile (myFile, 'saveGame.txt');
+
+      Reset(myFile);
+
+      Readln(myFile, faseAtual, NumeroNaves, totalNavesDestruidas, auxLife, pontuacao);
+      CloseFile(myFile);
+      for i := 1 to (5 - auxLife) do atualizaVida;
+    end
+    else
+    begin
+      faseAtual:=1;
+      NumeroNaves:=3;
+      totalNavesDestruidas:=0;
+      pontuacao:=0;
+    end;
+
     DoubleBuffered         := true;
     endGame                := false;
+//    CloseFile (myFile);
+    atualizaPontuacao(15);
+    lblQntdWave.Caption:=String.Parse(faseAtual);
+    lblQntdNavesDestruidas.Caption:=String.Parse(totalNavesDestruidas);
 
     tmExplosao:=TMediaPlayer.Create(Form1);
     tmExplosao.Parent:=Form1;
@@ -242,6 +266,15 @@ begin
       //zerar energia perdida
       pnlEnergiaRed.Left  := painelEnergia.Left + painelEnergia.Width - 3;
       pnlEnergiaRed.Width := 3;
+
+      if not endGame then
+      begin
+        escreverArquivo('saveGame.txt', InttoStr(faseAtual), false);
+        escreverArquivo('saveGame.txt', InttoStr(numeroNaves), true);
+        escreverArquivo('saveGame.txt', InttoStr(totalNavesDestruidas), true);
+        escreverArquivo('saveGame.txt', InttoStr(life), true);
+        escreverArquivo('saveGame.txt', InttoStr(pontuacao), true);
+      end;
    end;
 end;
 
@@ -524,6 +557,12 @@ end;
 
 procedure TForm1.telaFimJogo();
 begin
+  endGame := true;
+  escreverArquivo('saveGame.txt', InttoStr(1), false);
+   escreverArquivo('saveGame.txt', InttoStr(3), true);
+   escreverArquivo('saveGame.txt', InttoStr(0), true);
+   escreverArquivo('saveGame.txt', InttoStr(5), true);
+   escreverArquivo('saveGame.txt', InttoStr(0), true);
    inicializaMemo(false, '');
    Memo1.Font.Size:=20;
    Memo1.ScrollBars:=ssNone;
@@ -535,11 +574,12 @@ begin
    Memo1.Text:=Memo1.Text+#13+#10+'       Naves abatidas: ';
    Memo1.Text:=Memo1.Text+string.Parse(totalNavesDestruidas);
 
-   endGame := true;
+
    TMusic.Enabled:=false;
    tmFundo.Enabled:=false;
    Panel1.Visible:=false;
    nave.Visible:=false;
+
 end;
 
 procedure TForm1.inicializaMemo(lerArq:boolean; diretorio:string);
@@ -554,9 +594,53 @@ begin
    Memo1.Visible:=true;
 end;
 
-procedure TForm1.FormClose(Sender: TObject);
+//function TForm1.lerArquivo(nomeArquivo: String): Boolean;
+//var
+//  myFile: TextFile;arq: TextFile; leitura: String; auxLife:integer;
+//begin
+//  // Arquivo não existe
+//  Result := false;
+//  // Se o arquivo existir
+//  if(FileExists(nomeArquivo) = True) then
+//  begin
+//    AssignFile(arq, nomeArquivo);
+//    Reset(arq);
+//    Readln(myFile, faseAtual, NumeroNaves, totalNavesDestruidas, auxLife, pontuacao);
+//    // Arquivo existe
+//    Result := true;
+//  end;
+//    // Feche o arquivo
+//    CloseFile(arq);
+//end;
+
+procedure TForm1.escreverArquivo(nomeArquivo, conteudo: String; adicionar: Boolean);
+var
+  arq: TextFile;
 begin
-//teste
+  // Se o arquivo existir
+  if(FileExists(nomeArquivo) = True) then
+  begin
+    // Associe o arquivo
+    AssignFile(arq, nomeArquivo);
+    // Abra de acordo com o modo de adição pedido
+    if(adicionar = True) then
+      Append(arq)
+    else
+      Rewrite(arq);
+    // Escreva o conteúdo repassado no arquivo
+    Writeln(arq, conteudo);
+    // Feche o arquivo
+    CloseFile(arq);
+  end
+  else
+  begin
+    // Se o arquivo não existir, crie-o, escreva o conteúdo e feche-o
+    AssignFile(arq, nomeArquivo);
+    Rewrite(arq);
+    Writeln(arq, conteudo);
+    CloseFile(arq);
+  end;
 end;
 
 end.
+

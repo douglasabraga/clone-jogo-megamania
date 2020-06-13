@@ -2,8 +2,12 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2020/03/16 09:30:31.000.400,=C:\Users\pulin\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2020/03/16 10:05:13.000.240,C:\Users\pulin\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\Users\pulin\Desktop\Megamania\TelaPrincipal.dfm</Transaction>
     <Transaction>2020/03/16 10:05:13.000.240,C:\Users\pulin\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\pulin\Desktop\Megamania\TelaPrincipal.pas</Transaction>
+    <Transaction>2020/03/16 10:05:13.000.240,C:\Users\pulin\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\Users\pulin\Desktop\Megamania\TelaPrincipal.dfm</Transaction>
     <Transaction>2020/03/16 10:05:22.000.069,C:\Users\pulin\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\pulin\Desktop\Megamania\Project1.dproj</Transaction>
+    <Transaction>2020/06/12 20:15:22.000.269,=C:\Users\dougl\Downloads\DELPHI\jogo-megamania\XMLManipUnit.pas</Transaction>
+    <Transaction>2020/06/12 20:15:40.000.664,=C:\Users\dougl\Downloads\DELPHI\jogo-megamania\ArquivosUnit.pas</Transaction>
+    <Transaction>2020/06/12 22:57:45.000.187,C:\Users\dougl\Downloads\DELPHI\jogo-megamania\ArquivosUnit.pas=</Transaction>
+    <Transaction>2020/06/12 22:57:48.000.719,C:\Users\dougl\Downloads\DELPHI\jogo-megamania\XMLManipUnit.pas=</Transaction>
   </Transactions>
 </BorlandProject>
